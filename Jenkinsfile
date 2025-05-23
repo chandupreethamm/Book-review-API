@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     tools {
-        nodejs 'task8' // Use the NodeJS name you configured in Jenkins Global Tools
+        nodejs 'task8' // Make sure this matches the name in Jenkins Global Tools
     }
 
     stages {
@@ -47,6 +47,20 @@ pipeline {
                 sh 'zip -r book-review-api.zip .'
                 archiveArtifacts artifacts: 'book-review-api.zip', fingerprint: true
             }
+        }
+
+        stage('Release') {
+            steps {
+                echo 'Releasing version v1.0.0'
+                sh 'echo v1.0.0 > release.txt'
+                archiveArtifacts artifacts: 'release.txt', fingerprint: true
+            }
+        }
+    }
+
+    post {
+        always {
+            echo 'Pipeline execution complete.'
         }
     }
 }
