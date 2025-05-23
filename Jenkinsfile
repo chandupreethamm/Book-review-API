@@ -2,49 +2,44 @@ pipeline {
     agent any
 
     tools {
-        nodejs 'task8' // Make sure this matches the name in Jenkins Global Tools
+        nodejs 'task8'
     }
 
     stages {
-        stage('Declarative: Checkout SCM') {
+        stage('Checkout SCM') {
             steps {
                 checkout scm
             }
         }
 
-        stage('Declarative: Tool Install') {
+        stage('Tool Install') {
             steps {
-                echo 'Installing NodeJS tools...'
-                sh 'node -v'
-                sh 'npm install'
+                echo 'Installing Node tools...'
             }
         }
 
         stage('Install Dependencies') {
             steps {
-                echo 'Installing project dependencies...'
                 sh 'npm install'
             }
         }
 
         stage('Run Tests') {
             steps {
-                echo 'Running tests...'
                 sh 'npm test'
             }
         }
 
         stage('Lint') {
             steps {
-                echo 'Running ESLint...'
                 sh 'npx eslint .'
             }
         }
 
         stage('Build Artefact') {
             steps {
-                echo 'Zipping source code as build artefact...'
-                sh 'zip -r book-review-api.zip .'
+                echo 'Creating build artifact...'
+                sh 'zip -r book-review-api.zip . -x "node_modules/*"'
                 archiveArtifacts artifacts: 'book-review-api.zip', fingerprint: true
             }
         }
@@ -56,11 +51,29 @@ pipeline {
                 archiveArtifacts artifacts: 'release.txt', fingerprint: true
             }
         }
+
+        stage('Deploy') {
+            steps {
+                echo 'Simulating deployment by copying artifact to deploy/ directory...'
+                sh 'mkdir -p deploy && cp book-review-api.zip deploy/'
+                archiveArtifacts artifacts: 'deploy/book-review-api.zip', fingerprint: true
+            }
+        }
+
+        stage('Monitoring') {
+            steps {
+                echo 'Simulating monitoring... tailing logs'
+                sh 'echo "All systems operational" > system.log && tail system.log'
+            }
+        }
     }
 
     post {
-        always {
-            echo 'Pipeline execution complete.'
+        success {
+            echo 'Pipeline completed successfully!'
+        }
+        failure {
+            echo 'Pipeline failed. Please check the logs.'
         }
     }
 }
