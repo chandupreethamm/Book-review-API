@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     tools {
-        nodejs 'task8'
+        nodejs 'task8' // Ensure 'task8' is configured in Jenkins tools
     }
 
     stages {
@@ -39,7 +39,9 @@ pipeline {
         stage('Security') {
             steps {
                 echo 'Running security audit with npm...'
-                sh 'npm audit --audit-level=moderate || true'
+                sh 'npm audit --json > audit-report.json || true'
+                sh 'cat audit-report.json'
+                archiveArtifacts artifacts: 'audit-report.json', fingerprint: true
             }
         }
 
