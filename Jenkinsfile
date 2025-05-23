@@ -14,7 +14,7 @@ pipeline {
 
         stage('Tool Install') {
             steps {
-                echo 'Installing Node tools...'
+                echo 'Installing required tools...'
             }
         }
 
@@ -36,10 +36,17 @@ pipeline {
             }
         }
 
+        stage('Security') {
+            steps {
+                echo 'Running security audit with npm...'
+                sh 'npm audit --audit-level=moderate || true'
+            }
+        }
+
         stage('Build Artefact') {
             steps {
-                echo 'Creating build artifact...'
-                sh 'zip -r book-review-api.zip . -x "node_modules/*"'
+                echo 'Creating ZIP artefact...'
+                sh 'zip -r book-review-api.zip .'
                 archiveArtifacts artifacts: 'book-review-api.zip', fingerprint: true
             }
         }
@@ -54,26 +61,22 @@ pipeline {
 
         stage('Deploy') {
             steps {
-                echo 'Simulating deployment by copying artifact to deploy/ directory...'
-                sh 'mkdir -p deploy && cp book-review-api.zip deploy/'
-                archiveArtifacts artifacts: 'deploy/book-review-api.zip', fingerprint: true
+                echo 'Simulating deployment to staging environment...'
+                sh 'echo "Deploying to staging server..."'
             }
         }
 
         stage('Monitoring') {
             steps {
-                echo 'Simulating monitoring... tailing logs'
-                sh 'echo "All systems operational" > system.log && tail system.log'
+                echo 'Simulating monitoring checks...'
+                sh 'echo "Monitoring app status..."'
             }
         }
     }
 
     post {
-        success {
-            echo 'Pipeline completed successfully!'
-        }
-        failure {
-            echo 'Pipeline failed. Please check the logs.'
+        always {
+            echo 'Pipeline execution completed.'
         }
     }
 }
