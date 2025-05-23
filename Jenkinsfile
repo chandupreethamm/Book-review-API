@@ -1,50 +1,34 @@
-pipeline {
+ppipeline {
     agent any
 
     tools {
-        nodejs "NodeJS" // Make sure you set this up in Jenkins under Global Tools
+        nodejs 'task8' // this must match the exact name configured in Jenkins
     }
 
     stages {
         stage('Install Dependencies') {
             steps {
-                echo 'Installing project dependencies...'
                 sh 'npm install'
             }
         }
 
-        stage('Build Artefact') {
+        stage('Run Tests') {
             steps {
-                echo 'Building Docker image as build artefact...'
-                sh 'docker build -t book-review-api:latest .'
+                sh 'npm test'
             }
         }
 
         stage('Lint') {
             steps {
-                echo 'Running ESLint for code quality...'
                 sh 'npx eslint .'
             }
         }
 
-        stage('Test') {
+        stage('Build Artefact') {
             steps {
-                echo 'Running tests using Jest...'
-                sh 'npm test'
+                echo 'Building Docker image as artefact...'
+                sh 'docker build -t book-review-api:latest .'
             }
-        }
-
-        stage('Deploy') {
-            steps {
-                echo 'Simulating deployment step...'
-                sh 'echo "App deployed locally (simulated)"'
-            }
-        }
-    }
-
-    post {
-        always {
-            echo 'Pipeline execution complete.'
         }
     }
 }
