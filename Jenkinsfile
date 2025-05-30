@@ -63,6 +63,7 @@ pipeline {
 
         stage('Deploy') {
     steps {
+        echo 'Pipeline updated!'
         echo 'Triggering deployment to Render...'
         sh '''
             curl -X POST https://api.render.com/deploy/srv-d0skbnili9vc73d2uo10?key=TNzt0Awz_c4
