@@ -65,7 +65,7 @@ pipeline {
     steps {
         echo 'Triggering deployment to Render...'
         sh '''
-            curl -X POST https://api.render.com/deploy/srv-xxxxxx?key=your-key
+            curl -X POST https://api.render.com/deploy/srv-d0skbnili9vc73d2uo10?key=TNzt0Awz_c4
         '''
     }
 }
