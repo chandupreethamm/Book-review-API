@@ -55,14 +55,29 @@ pipeline {
 
         stage('Release') {
             steps {
-                echo 'Releasing version v1.0.0'
-                sh 'echo v1.0.0 > release.txt'
-                archiveArtifacts artifacts: 'release.txt', fingerprint: true
+        echo 'Tagging release version...'
+        script {
+            def releaseVersion = "v1.0.${BUILD_NUMBER}"
+            sh "git config --global user.email 'chandu.preethamnaidu@gmail.com'"
+            sh "git config --global user.name 'Chandu Preetham'"
+
+            sh "git tag -a ${releaseVersion} -m 'Release ${releaseVersion}'"
+
+            // Securely push tag using token
+            withCredentials([string(credentialsId: 'github_pat', variable: 'GIT_TOKEN')]) {
+                sh "git push https://${GIT_TOKEN}@github.com/chandupreethamm/Book-review-API.git ${releaseVersion}"
             }
+
+            writeFile file: 'release.txt', text: "${releaseVersion} - Released via Jenkins"
         }
+        archiveArtifacts artifacts: 'release.txt', fingerprint: true
+    }
+}
+
+
 
         stage('Deploy') {
-    steps {
+            steps {
         echo 'Pipeline updated!'
         echo 'Triggering deployment to Render...'
         sh '''
