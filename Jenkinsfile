@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     tools {
-        nodejs 'task8' // Ensure 'task8' is configured in Jenkins tools
+        nodejs 'task8' 
     }
 
     stages {
@@ -62,11 +62,14 @@ pipeline {
         }
 
         stage('Deploy') {
-            steps {
-                echo 'Simulating deployment to staging environment...'
-                sh 'echo "Deploying to staging server..."'
-            }
-        }
+    steps {
+        echo 'Triggering deployment to Render...'
+        sh '''
+            curl -X POST https://api.render.com/deploy/srv-xxxxxx?key=your-key
+        '''
+    }
+}
+
 
         stage('Monitoring') {
             steps {
